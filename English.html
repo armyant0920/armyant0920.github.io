@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="phrase1.json"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <title>高中英文常見單字-1</title>
+    <style>
+        table {
+
+            background-color: white;
+            border: 2px solid black;
+            border-collapse: collapse;
+
+        }
+        th{
+            background-color: darkcyan;
+            border: 2px solid black;
+            border-collapse: collapse;
+        }
+        td{
+            border: 2px solid black;
+            border-collapse: collapse;
+
+        }
+    </style>
+</head>
+
+
+<body>
+    <select>
+        
+
+    </select>
+    <table id='mytable' style="border-style: solid;">
+        <thead>
+            <th scope="col" style="border-style: solid;">題號</th>
+            <th scope="col" style="border-style: solid;">單字</th>
+            <th scope="col" style="border-style: solid;">詞性</th>
+            <th scope="col" style="border-style: solid;">中文</th>
+            <th scope="col" style="border-style: solid;">填答</th>
+            <th scope="col" style="border-style: solid;">結果</th>
+            <thead>
+
+    </table>
+    <script>
+        var data;
+        const correct="⭕";
+        const incorrect="❌";
+
+        $(document).ready(function () {//初始化,取得指定本地json文件資料
+
+            var phrase = [{ "en": "apple", "ch": "蘋果" }, { "en": "banana", "ch": "香蕉" }]
+            console.log(`phrase1=${phrase[0].en},${phrase[0].ch}`)
+
+
+
+            //var phrase1=JSON.parse(phrase1);
+
+            $.getJSON("phrase1.json", function (result) {//
+                // console.log(result);
+                data = result;
+                $.each(result, function (index, word) {
+                    console.log(`word=${result[index].en}`);
+                    $("#mytable").append(
+                        '<tr><td>' + index + '</td><td class="question">' + hideMsg(data[index].en) + '<input type="hidden" value='+ data[index].en+'></td><td>' + data[index].pos + '</td><td>' + data[index].ch + '</td><td><input class="ans" id="answer'+index+'"></td><td class="reply"></td></tr>'
+
+                    );
+
+                })
+
+            })
+            console.log(`data=${data}`);
+            //renderTable(data);
+        });
+
+        function hideMsg(text){
+            var charArr=Array.from(text);
+            var result="";
+            for(let i=0;i<charArr.length;i++){
+                if(i==0 || i==charArr.length-1){
+                    result+=charArr[i];
+                }else{
+                    result+="*";
+                }
+            }
+            return result;//text.slice(0,1)+text.slice(1,-2).replace()
+        }
+
+        $(document).on('blur','.ans',function(){
+            let ans=$(this).val();
+            console.log(`ans=${ans}`);
+            let ques = $(this).parent().siblings("td[class='question']").children("input").val();
+            console.log(`ques=${ques}`);
+
+            if(ans==ques){
+                $(this).parent().siblings("td[class='reply']").text(correct);        
+
+            }else{
+                $(this).parent().siblings("td[class='reply']").text(incorrect)
+            }
+            
+        });
+
+
+        /*$(document).on('click','.postComment',function(){
+		
+		
+		console.log('送出留言動態綁定');
+		let comment=$(this).parent().siblings("textarea[class='comment']");
+		console.log("comment="+comment.val());
+		let postUrl=$(this).val();
+		console.log('請求路徑:'+postUrl);
+		let check=checkLogin();
+		console.log("login狀態:"+check);
+		if(check){
+		console.log("login");
+		
+		
+		$.ajax({
+				
+				type: "POST", //傳送方式
+				url: postUrl, //傳送目的地
+				dataType: "json", //資料格式
+				data: { //傳送資料
+					comment: comment.val()
+	
+				},
+				success: function(data) {
+					comment.val('');
+					if (data) {
+					
+					swal.fire({
+	      		      				  title: "success",
+	      		      				  text: "留言成功!",
+	      		      				  icon: "success",
+	      		      				  button: "OK",
+	      		      				});
+	      		      				
+
+						resetComment($(this).siblings('restBtn'));
+						refresh();
+	
+					} else {
+							swal.fire({
+	      		    				  title:'fail',
+	      		    				  text: "留言失敗!",
+	      		    				  icon: "error",
+	      		    				  button: "OK",
+	      		    				}); 
+	
+					}
+				},
+				error: function(data) {
+					alert("server發生錯誤");
+	
+	
+				}
+			});
+			
+			
+			
+			
+			}
+		
+		
+		});*/
+
+
+
+
+
+
+
+        /*function renderTable(data) {
+
+            $.each(data, function (index) {
+                $("#mytable").append(
+                    '<tr><td>' + index + '</td><td>' + data[index].en + '</td><td>' + data[index].pos + '</td><td>' + data[index].ch + '</td></tr>'
+
+
+                );
+
+
+            });
+
+
+
+        }*/
+    </script>
+</body>
+
+</html>
