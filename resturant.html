@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Resturant Test</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <style>
+            table{
+
+                background-color: black;
+            }
+
+            td{
+                width: 50px;
+                height:50px;
+                border-radius: 100%;
+                
+                border-collapse: collapse;
+                border-style: solid 10px;
+                text-align: center;
+                font-size: large;
+                font-weight: bolder;
+                color: white;
+                background-color: blue;
+                
+            }
+
+        </style>
+    </head>
+
+
+<body>
+
+    <div style="width: 100%;">
+        <div style="width: 50%;float: left;">
+        <label for ="seatNum" style="font-weight: bold; font-size: 20px; margin-left: 0px; margin-bottom: 20px">輸入座位數</label>
+
+        <input type='number' name="seatNum" id="seatNum" placeholder="請輸入正整數偶數"/>
+
+
+        <button onclick="renderTable($('#seatNum').val())">餐廳布局</button>
+        <button onclick="solve();">解答</button>
+        <button onclick="reset();">重置座位</button>
+        <div id="answer">
+
+
+        </div>    
+
+        </div>    
+   
+           <div style="width: 50%;float: left;">
+            <table id="resturant"> 
+               
+             </table>
+
+
+           </div> 
+        
+    </div>
+
+    
+    <script>
+    
+    var usedSeat=[];
+    var seatNum;//初始畫面
+   $(document).ready(function(){
+    renderTable(6);
+   });
+
+    $(document).on('click', 'td', function () {
+
+        let td = $(this);
+        let seat=$(td).text();
+        console.log(`seat=${seat}`);
+
+        if (td.attr('pick') == 'true') {
+           unpick(td);        
+        } else {
+            pick(td);               
+        }
+   
+    });
+
+
+    function reset(){
+
+        usedSeat=[]; 
+
+        
+        $('td').css("background-color", "Blue");//恢復為原本狀態
+        $('td').removeAttr('hint').removeAttr('pick').removeAttr('style');
+        $('td').removeAttr('pick');
+        $('#answer').empty();
+
+    }
+
+    /*function clearSeat(){
+        console.log('do clear');
+        usedSeat=[];
+        $('td[pick]').removeAttr('style').removeAttr('pick');//恢復為原本狀態
+        //$('td').removeAttr('pick')
+   
+       
+
+    }*/
+
+    function unpick(td){
+
+        $(td).attr('pick', 'false');
+            $(td).css("background-color", "Blue");
+            let seat=parseInt($(td).text(),10);
+        console.log(`seat=${seat}`);
+        usedSeat.splice(usedSeat.indexOf(seat),1);
+
+    }
+
+    function pick(td){
+
+        $(td).attr('pick', 'true');
+            $(td).css("background-color", "Red");
+            let seat=parseInt($(td).text(),10);
+        usedSeat.push(seat); 
+       
+    }
+    function setHint(a,b){
+        console.log(`a=${a},b=${b}`);
+
+        $('td[hint]').css("background-color", "Blue");//恢復為原本狀態
+        $('td').removeAttr('hint');
+
+        $('td').filter(function(){
+            return (($(this).text()==a)|| ($(this).text()==b) ) ; 
+
+        }).css("background-color","Green").attr('hint','');
+
+        /*$('td:eq("'+a+'"),td:eq("'+b+'")').attr('hint','');
+        $('td:eq("'+a+'"),td:eq("'+b+'")').css('background-color','green');*/
+
+    }
+
+
+    function renderTable(input) {
+                 
+            console.log(`seatNum=${input}`);
+
+            if(input<0){
+
+                alert("請輸入>0 正偶數");
+                return;
+            }
+            if(input%2!=0){
+
+            alert("請輸入正偶數");
+            return;
+            }
+            seatNum=input;
+           /* switch(seatNum){
+                case (seatNum<0):
+                    alert("輸入<0");
+                    return;
+                    break;
+                
+                case (seatNum%2!=0):
+                    alert("需輸入整數");
+                    return;
+                    break;
+                default:
+                    console.log(`${seatNum%2==0}`);
+
+            }*/
+
+            //逐行刪掉所有座位
+            $('#resturant').find("tr").each(function(){
+
+                $(this).remove();
+
+            })
+
+            usedSeat=[];//清空已用座位
+
+            let tableStr="";
+            for(let i=1;i<=input;i++){
+                if(i%2!=0){
+
+                    tableStr+="<tr>"
+                    $('#resturant').append("<tr>");
+
+                }
+
+                tableStr+="<td>"+i+"</td>";
+
+                if(i%2==0){
+
+                tableStr+="</tr>";
+               
+                }
+
+            }
+            $('#resturant').append(tableStr);
+       
+        }
+
+    function solve(){
+        //點下解答時,先把之前畫面上的提示洗掉
+        $('td[hint]').css("background-color", "Blue");
+        $('td').removeAttr('hint');
+        var ansStr="";
+        var solNum=0;
+        ansStr+="<ul>";
+        $('#answer').empty();    
+        for(let i=1;i<=seatNum;i++){
+
+            if(usedSeat.indexOf(i)==-1){//如果不包含這個座位    
+
+                if(i%2!=0 && (usedSeat.indexOf(i+1)==-1 && i+1<=seatNum)){
+                    solNum++;
+                    ansStr+="<li><a href='javascript:;'onclick='setHint("+i+","+(i+1)+")'>相鄰座位:"+i+","+(i+1)+"</a></li>";  
+                }
+
+                if (usedSeat.indexOf(i + 2)==-1 && i + 2 <= seatNum){
+                    solNum++;
+                    ansStr+="<li><a href='javascript:;'onclick='setHint("+i+","+(i+2)+")'>相鄰座位:"+i+","+(i+2)+"</a></li>";  
+                }
+            }  
+        }    
+        if(solNum>0){
+                ansStr+="共有"+solNum+"組解";
+            }else{
+                ansStr+="無解!請確認座位占用情況";
+            }
+
+        $('#answer').append(ansStr);
+
+    }
+
+    </script>
+    
+</body>
+</html>
