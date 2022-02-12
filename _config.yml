@@ -98,6 +98,9 @@ defaults:
       author_profile: true
       read_time: true
       comments: true
+        provider:disqus
+        disqus:
+            short_name:armyant0920-git
       share: true
       related: true
   # _pages
